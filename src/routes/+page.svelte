@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
 
 	let play = $state(false);
@@ -7,24 +7,37 @@
 	let firstBackgroundColor = $state('#470db1');
 	let secondBackgroundColor = $state('#640f0f');
 
-	let arrayImage = [];
+	let audio: HTMLAudioElement | null = null;
+	let interval: number | null = null;
 
-	let audio = null;
+	let animationType = ['ease-in', 'ease-out', 'ease-in-out', 'linear'];
 
 	const startAnimation = () => {
-		play = true;
+		if (audio) {
+			audio.play();
 
-		audio.play();
+			audio.addEventListener('ended', () => {
+				if (audio) {
+					audio.currentTime = 0;
+					audio.play();
+				}
+			});
+		}
 
-		setInterval(() => {
+		setTimeout(() => {
+			play = true;
+		}, 100);
+
+		interval = setInterval(() => {
 			firstBackgroundColor = randomColor();
 			secondBackgroundColor = randomColor();
 			createRandomImage();
-		}, 500);
+		}, 800);
 	};
 
 	onMount(() => {
 		audio = new Audio('/conga.mp3');
+		audio.load();
 	});
 
 	const randomColor = () => {
@@ -34,29 +47,57 @@
 	const createRandomImage = () => {
 		const image = document.createElement('img');
 		image.src = '/metadance.gif';
-		image.style.top = `${Math.random() * 95 + 5}vh`;
-		image.style.left = `${Math.random() * 95 + 5}vw`;
+		image.style.top = `${Math.random() * 90}vh`;
 		image.style.position = 'absolute';
-		image.style.zIndex = '100';
+		image.style.zIndex = '11';
 		image.style.opacity = `${Math.random() * 0.5 + 0.2}`;
-		image.style.width = `${Math.random() * 25 + 3}vw`;
-		image.style.animationDuration = `${Math.random() * 5 + 5}s`;
-		const element = document.body.appendChild(image);
-		arrayImage.push(element);
+		image.style.width = `${Math.random() * 20 + 3}vw`;
+		image.style.animationDuration = `${Math.random() * 8 + 4}s`;
+		image.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
 
-		//max 10 images
-		if (arrayImage.length > 10) {
-			document.body.removeChild(arrayImage[0]);
-			arrayImage.shift();
+		if (Math.random() > 0.5) {
+			image.style.animationName = 'leftToRight';
+			image.style.left = `-${image.style.width + 2}vw`;
+		} else {
+			image.style.animationName = 'rightToLeft';
+			image.style.right = `${image.style.width + 102}vw`;
 		}
+
+		image.style.animationTimingFunction = animationType[Math.floor(Math.random() * 4)];
+		image.style.animationIterationCount = '1';
+
+		image.addEventListener('animationend', () => {
+			document.body.removeChild(image);
+		});
+
+		document.body.appendChild(image);
 	};
+
+	onDestroy(() => {
+		if (audio) {
+			audio.pause();
+			audio.currentTime = 0;
+		}
+
+		if (interval) {
+			clearInterval(interval);
+		}
+	});
 </script>
+
+<svelte:head>
+	{#if play}
+		<title>Conga Dance !</title>
+	{:else}
+		<title>???</title>
+	{/if}
+</svelte:head>
 
 <button on:click={startAnimation}>Trust me</button>
 
 {#if play}
 	<main
-		in:scale={{ duration: 500 }}
+		in:scale={{ duration: 1000 }}
 		style="--background-color: {firstBackgroundColor}; --background-color-2: {secondBackgroundColor}"
 	>
 		<div>
@@ -91,6 +132,10 @@
 		z-index: 1;
 	}
 
+	button:hover {
+		transform: translate(-50%, -50%) scale(0.95);
+	}
+
 	main {
 		background-color: var(--background-color, #470db1);
 		display: flex;
@@ -111,23 +156,7 @@
 		align-items: center;
 	}
 
-	img {
+	div > img {
 		width: 50vw;
-	}
-
-	.animated-image {
-		position: absolute;
-		width: 100px;
-		height: auto;
-		animation: move 5s linear infinite;
-	}
-
-	@keyframes move {
-		from {
-			transform: translateX(0);
-		}
-		to {
-			transform: translateX(calc(100vw + 100px));
-		}
 	}
 </style>

@@ -15,3 +15,48 @@ body{
 *, *::before, *::after{
     box-sizing: border-box;
 }
+
+.leftToRight {
+    position: absolute;
+    top: 50%;
+    left: -5vw;
+    transform: translateY(-50%);
+    animation: leftToRight 5s linear infinite;
+}
+
+.rightToLeft {
+    position: absolute;
+    top: 50%;
+    right: -5vw;
+    transform: translateY(-50%);
+    animation: rightToLeft 5s linear infinite;
+}
+
+@keyframes move {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(calc(100vw + 100px));
+    }
+}
+
+@keyframes leftToRight {
+    from {
+        left: -5vw;
+    }
+    to {
+        left: 105vw;
+        display: none;
+    }
+}
+
+@keyframes rightToLeft {
+    from {
+        right: -5vw;
+    }
+    to {
+        right: 105vw;
+        display: none;
+    }
+}
