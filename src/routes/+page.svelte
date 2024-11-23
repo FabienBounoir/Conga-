@@ -11,6 +11,7 @@
 	let interval: number | null = null;
 
 	let animationType = ['ease-in', 'ease-out', 'ease-in-out', 'linear'];
+	let animationName = ['leftToRight', 'rightToLeft', 'topToBottom', 'bottomToTop'];
 
 	const startAnimation = () => {
 		if (audio) {
@@ -47,7 +48,6 @@
 	const createRandomImage = () => {
 		const image = document.createElement('img');
 		image.src = '/metadance.gif';
-		image.style.top = `${Math.random() * 90}vh`;
 		image.style.position = 'absolute';
 		image.style.zIndex = '11';
 		image.style.opacity = `${Math.random() * 0.5 + 0.2}`;
@@ -55,12 +55,29 @@
 		image.style.animationDuration = `${Math.random() * 8 + 4}s`;
 		image.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
 
-		if (Math.random() > 0.5) {
-			image.style.animationName = 'leftToRight';
-			image.style.left = `-${image.style.width + 2}vw`;
-		} else {
-			image.style.animationName = 'rightToLeft';
-			image.style.right = `${image.style.width + 102}vw`;
+		let animationUsed = animationName[Math.floor(Math.random() * 4)];
+
+		switch (animationUsed) {
+			case 'leftToRight':
+				image.style.animationName = 'leftToRight';
+				image.style.left = `-${parseFloat(image.style.width) + 2}vw`;
+				image.style.top = `${Math.random() * 90}vh`;
+				break;
+			case 'rightToLeft':
+				image.style.animationName = 'rightToLeft';
+				image.style.right = `-${parseFloat(image.style.width) + 2}vw`;
+				image.style.top = `${Math.random() * 90}vh`;
+				break;
+			case 'topToBottom':
+				image.style.animationName = 'topToBottom';
+				image.style.top = `-${parseFloat(image.style.height) + 2}vh`;
+				image.style.left = `${Math.random() * 90}vw`;
+				break;
+			case 'bottomToTop':
+				image.style.animationName = 'bottomToTop';
+				image.style.bottom = `-${parseFloat(image.style.height) + 2}vh`;
+				image.style.left = `${Math.random() * 90}vw`;
+				break;
 		}
 
 		image.style.animationTimingFunction = animationType[Math.floor(Math.random() * 4)];

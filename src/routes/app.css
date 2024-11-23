@@ -60,3 +60,23 @@ body{
         display: none;
     }
 }
+
+@keyframes topToBottom {
+    from {
+        top: -5vh;
+    }
+    to {
+        top: 105vh;
+        display: none;
+    }
+}
+
+@keyframes bottomToTop {
+    from {
+        bottom: -5vh;
+    }
+    to {
+        bottom: 105vh;
+        display: none;
+    }
+}
